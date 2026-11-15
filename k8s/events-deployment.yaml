@@ -1,0 +1,24 @@
+apiVersion: apps/v1
+kind: Deployment
+
+metadata:
+  name: events-service
+
+spec:
+  replicas: 1
+
+  selector:
+    matchLabels:
+      app: events-service
+
+  template:
+    metadata:
+      labels:
+        app: events-service
+
+    spec:
+      containers:
+        - name: events-service
+          image: sofianefianso226/cyberwatch-events:v1
+          ports:
+            - containerPort: 8080

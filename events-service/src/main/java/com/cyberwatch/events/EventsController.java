@@ -1,27 +1,36 @@
 package com.cyberwatch.events;
 
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RestController;
-
 import java.util.List;
-import java.util.Map;
+
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 public class EventsController {
 
-    @GetMapping("/events")
-    public List<Map<String, Object>> getEvents() {
-        return List.of(
-            Map.of(
-                "id", 1,
-                "type", "LOGIN_FAILED",
-                "severity", "HIGH"
-            ),
-            Map.of(
-                "id", 2,
-                "type", "LOGIN_SUCCESS",
-                "severity", "LOW"
-            )
-        );
+    private final SecurityEventRepository repository;
+
+    public EventsController(SecurityEventRepository repository) {
+        this.repository = repository;
     }
+
+    @GetMapping("/events")
+    public List<SecurityEvent> getEvents() {
+        return repository.findAll();
+    }
+
+    @PostMapping("/events")
+    public SecurityEvent createEvent(@RequestBody CreateEventRequest request) {
+
+        SecurityEvent event = new SecurityEvent();
+
+        event.setType(request.type());
+        event.setSeverity(request.severity());
+
+        return repository.save(event);
+    }
+
+    public record CreateEventRequest(String type, String severity) {}
 }

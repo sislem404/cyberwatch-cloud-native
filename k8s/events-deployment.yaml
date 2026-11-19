@@ -1,6 +1,5 @@
 apiVersion: apps/v1
 kind: Deployment
-
 metadata:
   name: events-service
 
@@ -17,8 +16,34 @@ spec:
         app: events-service
 
     spec:
+      serviceAccountName: cyberwatch-app
+      automountServiceAccountToken: false
+
       containers:
         - name: events-service
-          image: sofianefianso226/cyberwatch-events:v1
+          image: sofianefianso226/cyberwatch-events:v2
+          securityContext:
+            runAsNonRoot: true
+            runAsUser: 10001
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop:
+                - ALL
+            seccompProfile:
+              type: RuntimeDefault
+
           ports:
             - containerPort: 8080
+
+          env:
+            - name: SPRING_DATASOURCE_URL
+              value: jdbc:postgresql://postgres:5432/cyberwatch
+
+            - name: SPRING_DATASOURCE_USERNAME
+              value: cyberwatch
+
+            - name: DB_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: postgres-secret
+                  key: POSTGRES_PASSWORD

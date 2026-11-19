@@ -1,0 +1,41 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: detection-service
+
+spec:
+  replicas: 1
+
+  selector:
+    matchLabels:
+      app: detection-service
+
+  template:
+    metadata:
+      labels:
+        app: detection-service
+
+    spec:
+      serviceAccountName: cyberwatch-app
+      automountServiceAccountToken: false
+
+      containers:
+        - name: detection-service
+          image: sofianefianso226/cyberwatch-detection:v1
+
+          ports:
+            - containerPort: 8080
+
+          env:
+            - name: EVENTS_SERVICE_URL
+              value: http://events-service:8080
+
+          securityContext:
+            runAsNonRoot: true
+            runAsUser: 10001
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop:
+                - ALL
+            seccompProfile:
+              type: RuntimeDefault

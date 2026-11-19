@@ -21,7 +21,7 @@ spec:
 
       containers:
         - name: frontend
-          image: sofianefianso226/cyberwatch-frontend:v2
+          image: sofianefianso226/cyberwatch-frontend:v4
 
           ports:
             - containerPort: 8080
